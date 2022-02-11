@@ -8,6 +8,7 @@ export default {
       newPlaceParams: {},
       activePlace: "",
       updatePlaceParams: {},
+      errors: {},
     };
   },
   created: function () {
@@ -21,11 +22,17 @@ export default {
       });
     },
     placeCreate: function () {
-      axios.post("/places", this.newPlaceParams).then((response) => {
-        console.log("Place Create", response.data);
-        this.places.push(response.data);
-        this.newPlaceParams = {};
-      });
+      axios
+        .post("/places", this.newPlaceParams)
+        .then((response) => {
+          console.log("Place Create", response.data);
+          this.places.push(response.data);
+          this.newPlaceParams = {};
+          this.errors = {};
+        })
+        .catch((errors) => {
+          this.errors = errors.response.data;
+        });
     },
     placeShow: function (place) {
       this.activePlace = place;
@@ -60,6 +67,7 @@ export default {
     </div>
     <div>
       <h1>Add A Place</h1>
+      <p v-for="error in errors" v-bind:key="error">{{ error }}</p>
       Place:
       <input type="text" v-model="newPlaceParams.name" />
       <br />
